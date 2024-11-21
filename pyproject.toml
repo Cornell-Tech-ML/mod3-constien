@@ -74,6 +74,7 @@ exclude = [
     "**/docs/**/*",
 ]
 
+[lint]
 ignore = [
     "ANN101",
     "ANN401",
