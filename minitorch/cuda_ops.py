@@ -469,13 +469,16 @@ def _tensor_matrix_multiply(
     I, J, K = a_shape[-2], b_shape[-1], a_shape[-1]  # noqa
 
     accum = 0.0
+    # Step 1)
     for pk in range(0, a_shape[2], BLOCK_DIM):
+        # Step 1.a)
         k = pk + pj
         if i < I and k < K:
             a_shared[pi, pj] = a_storage[
                 batch * a_batch_stride + i * a_strides[-2] + k * a_strides[-1]
             ]
 
+        # Step 1.b)
         k = pk + pi
         if k < K and j < J:
             b_shared[pi, pj] = b_storage[
@@ -484,6 +487,7 @@ def _tensor_matrix_multiply(
 
         cuda.syncthreads()
 
+        # Step 1.c)
         for k in range(min(BLOCK_DIM, K - pk)):
             accum += a_shared[pi, k] * b_shared[k, pj]
 
