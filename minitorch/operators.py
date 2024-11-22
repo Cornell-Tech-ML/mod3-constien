@@ -1,6 +1,6 @@
 """Collection of the core mathematical operators used throughout the code base."""
 
-import numpy as np
+import math
 
 from typing import Callable, Iterable, TypeVar
 
@@ -70,13 +70,12 @@ def inv_back(x: float, y: float) -> float:
 
 def exp(x: float) -> float:
     """Exponential operator. Returns e raised to the power of the passed argument"""
-    return np.e**x
+    return math.exp(x)
 
 
 def log(x: float) -> float:
     """Logarithmic operator. Returns the natural log of the passed argument"""
-    assert x > 0, "Cannot log a non-positive value"
-    return np.log(x)
+    return math.log(x + 1e-6)
 
 
 def log_back(x: float, y: float) -> float:
@@ -92,8 +91,7 @@ def log_back(x: float, y: float) -> float:
         float - the aforesaid value
 
     """
-    assert x > 0, "log derivative only defined for positive values"
-    return y / x
+    return y / (x + 1e-6)
 
 
 def relu(x: float) -> float:
@@ -121,7 +119,7 @@ def relu_back(x: float, y: float) -> float:
 
 def sigmoid(x: float) -> float:
     """Sigmoid operator. Returns the result of the sigmoid function at the passed argument"""
-    return (1 / (1 + np.exp(-x))) if x >= 0 else (np.exp(x) / (1 + np.exp(x)))
+    return (1 / (1 + math.exp(-x))) if x >= 0 else (math.exp(x) / (1 + math.exp(x)))
 
 
 def add(x: float, y: float) -> float:
@@ -146,7 +144,7 @@ def lt(x: float, y: float) -> float:
 
 def is_close(x: float, y: float, /) -> bool:
     """Near-equality operator. Returns 1 only if the passed arguments are with .01 of each other else 0"""
-    return abs(x - y) < 1e-2
+    return (x - y < 1e-2) and (y - x < 1e-2)
 
 
 def max(*args: float) -> float:

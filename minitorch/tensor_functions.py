@@ -281,13 +281,14 @@ class EQ(Function):
     @staticmethod
     def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
         """Invoke equal to function saving arguments into context as necessary"""
-        ctx.save_for_backward(t1, t2)
+        ctx.save_for_backward(t1.shape, t2.shape)
         return t1.f.eq_zip(t1, t2)
 
     @staticmethod
     def backward(ctx: Context, grad_out: Tensor) -> Tuple[Tensor, Tensor]:
         """Compute equal to derivative on arguments in context, scaled by arbitrary input"""
-        return grad_out.zeros(), grad_out.zeros()
+        t1_shape, t2_shape = ctx.saved_values
+        return zeros(t1_shape), zeros(t2_shape)
 
 
 class LT(Function):
@@ -296,13 +297,14 @@ class LT(Function):
     @staticmethod
     def forward(ctx: Context, t1: Tensor, t2: Tensor) -> Tensor:
         """Invoke less than function saving arguments into context as necessary"""
-        ctx.save_for_backward(t1, t2)
+        ctx.save_for_backward(t1.shape, t2.shape)
         return t1.f.lt_zip(t1, t2)
 
     @staticmethod
     def backward(ctx: Context, grad_out: Tensor) -> Tuple[Tensor, Tensor]:
         """Compute less than derivative on arguments in context, scaled by arbitrary input"""
-        return grad_out.zeros(), grad_out.zeros()
+        t1_shape, t2_shape = ctx.saved_values
+        return zeros(t1_shape), zeros(t2_shape)
 
 
 class IsClose(Function):
@@ -336,9 +338,9 @@ class Sum(Function):
         return t1.f.add_reduce(t1, int(dim.item()))
 
     @staticmethod
-    def backward(ctx: Context, grad_out: Tensor) -> Tuple[Tensor, Tensor]:
+    def backward(ctx: Context, grad_out: Tensor) -> Tuple[Tensor, float]:
         """Compute sum derivative on arguments in context, scaled by arbitrary input"""
-        return grad_out, grad_out._ensure_tensor(0.0)
+        return grad_out, 0.0
 
 
 # Helpers for Constructing tensors

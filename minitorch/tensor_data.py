@@ -68,10 +68,10 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
         out_index : return index corresponding to position.
 
     """
-    posn = np.flip(shape)
-    lens = np.append(1, np.cumprod(posn)[:-1])
-
-    out_index[::-1] = (ordinal // lens) % posn
+    pos = ordinal + 0
+    for i in range(len(shape) - 1, -1, -1):
+        out_index[i] = int(pos % shape[i])
+        pos //= shape[i]
 
 
 def broadcast_index(
@@ -95,7 +95,8 @@ def broadcast_index(
         None
 
     """
-    out_index[:] = np.where(shape > 1, big_index[-len(shape) :], 0)
+    for i, s in enumerate(shape):
+        out_index[i] = big_index[i + len(big_shape) - len(shape)] if s > 1 else 0
 
 
 def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
