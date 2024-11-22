@@ -286,14 +286,15 @@ def tensor_reduce(
             to_index(i, out_shape, out_index)
             location = index_to_position(out_index, out_strides)
 
-            a_index = out_index.copy()
-            reduced = out[location]
-            for j in range(a_shape[reduce_dim]):
-                a_index[reduce_dim] = j
+            j = index_to_position(out_index, a_strides)
+            move = a_strides[reduce_dim]
 
-                reduced = fn(a_storage[index_to_position(a_index, a_strides)], reduced)  # noqa
+            accum = out[location]
+            for k in range(a_shape[reduce_dim]):
+                accum = fn(a_storage[j], accum)  # noqa
+                j += move
 
-            out[location] = reduced
+            out[location] = accum
 
     return njit(_reduce, parallel=True)  # type: ignore
 
