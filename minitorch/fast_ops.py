@@ -348,8 +348,8 @@ def _tensor_matrix_multiply(
     K = a_shape[-1]  # noqa
 
     for n in prange(N):
-        for i in prange(I):
-            for j in prange(J):
+        for i in range(I):
+            for j in range(J):
                 a_idx = n * a_batch_stride + i * a_strides[1]
                 b_idx = n * b_batch_stride + j * b_strides[2]
 
